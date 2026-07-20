@@ -45,6 +45,7 @@ ignore = [
   # Unmaintained crates — not active vulnerabilities, just signals.
   { id = "RUSTSEC-2024-0436", reason = "paste unmaintained — no fix available; widely used proc-macro with no functional alternative yet" },
   { id = "RUSTSEC-2025-0134", reason = "rustls-pemfile unmaintained — superseded by rustls-pki-types but rustls 0.23 still uses it" },
+  { id = "RUSTSEC-2026-0173", reason = "proc-macro-error2 unmaintained — no safe upgrade available; transitive proc-macro dependency with no functional alternative yet" },
 ]
 
 [licenses]
