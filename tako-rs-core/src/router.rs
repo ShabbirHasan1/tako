@@ -31,6 +31,7 @@
 
 mod definition;
 mod dispatch;
+mod introspection;
 mod layers;
 mod method_map;
 mod mounting;

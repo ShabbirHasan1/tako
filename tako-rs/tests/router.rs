@@ -665,3 +665,57 @@ async fn scope_groups_routes_under_prefix() {
   assert_eq!(resp.status(), StatusCode::OK);
   assert_eq!(body_str(resp).await, "dashboard");
 }
+
+#[test]
+fn routes_is_empty_for_a_new_router() {
+  let router = Router::new();
+  assert!(router.routes().is_empty());
+}
+
+#[test]
+fn routes_returns_every_registered_route() {
+  let mut router = Router::new();
+  router.route(Method::GET, "/health", |_req: Request| async { "ok" });
+  router.route(Method::POST, "/shorten", |_req: Request| async { "ok" });
+  router.route(Method::GET, "/{id}", |_req: Request| async { "ok" });
+
+  let mut seen: Vec<(Method, String)> = router
+    .routes()
+    .iter()
+    .map(|r| (r.method.clone(), r.path.clone()))
+    .collect();
+  seen.sort_by(|a, b| a.1.cmp(&b.1));
+
+  assert_eq!(
+    seen,
+    vec![
+      (Method::GET, "/health".to_string()),
+      (Method::POST, "/shorten".to_string()),
+      (Method::GET, "/{id}".to_string()),
+    ]
+  );
+}
+
+#[test]
+fn routes_preserves_the_tsr_flag() {
+  let mut router = Router::new();
+  router.route(Method::GET, "/plain", |_req: Request| async { "ok" });
+  router.route_with_tsr(Method::GET, "/tsr", |_req: Request| async { "ok" });
+
+  let routes = router.routes();
+  let plain = routes.iter().find(|r| r.path == "/plain").unwrap();
+  let tsr = routes.iter().find(|r| r.path == "/tsr").unwrap();
+  assert!(!plain.tsr);
+  assert!(tsr.tsr);
+}
+
+#[test]
+fn routes_reflect_scope_prefixes() {
+  let mut router = Router::new();
+  router.scope("/api/v1", |r| {
+    r.get("/users", |_req: Request| async { "ok" });
+  });
+
+  let paths: Vec<String> = router.routes().iter().map(|r| r.path.clone()).collect();
+  assert_eq!(paths, vec!["/api/v1/users".to_string()]);
+}

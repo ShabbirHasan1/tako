@@ -6,6 +6,16 @@ All notable changes to **tako-rs** are documented here. Format inspired by
 
 ## [Unreleased]
 
+## [2.0.2] — 2026-07-20
+
+### Added
+
+- **Router introspection** — `Router::routes()` returns every registered route
+  as `Vec<Arc<Route>>`, grouped by HTTP method and in registration order, with
+  any `scope`/`nest` prefix already applied. Applications can derive
+  reserved-path or namespace policies from the live route table instead of
+  tracking registrations on the side.
+
 ## [2.0.0] — 2026-05-29
 
 Tako 2.0 is the first long-term-stable release. It collapses every breaking
